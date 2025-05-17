@@ -1,0 +1,2 @@
+"0","data |> mutate(yhat = predict(model.for)) -> pred.for"
+"0","pred.for"

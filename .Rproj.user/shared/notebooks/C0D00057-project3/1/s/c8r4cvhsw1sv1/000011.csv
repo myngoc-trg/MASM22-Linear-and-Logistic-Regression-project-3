@@ -1,0 +1,119 @@
+"0","p2bic_model <- multinom(plasma_123 ~ betadiet + bmi + vituse_new + age + "
+"0","    betadiet:bmi, data = data)"
+"1","# weights: "
+"1"," "
+"1","21"
+"1"," ("
+"1",""
+"1","12"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 224.329481
+"
+"1","iter  20 value 216.568067
+"
+"1","final  value 216.568050 
+"
+"1","converged
+"
+"0","step(p2bic_model, "
+"0","     scope = list(lower = null_model),"
+"0","     direction = ""both"")"
+"1","Start:  AIC="
+"1",""
+"1","457.14"
+"1",""
+"1","
+"
+"1",""
+"1","plasma_123 ~ betadiet + bmi + vituse_new + age + betadiet:bmi"
+"1",""
+"1","
+
+"
+"1","trying -"
+"1"," "
+"1","vituse_new"
+"1"," "
+"1","
+"
+"1","# weights: "
+"1"," "
+"1","18"
+"1"," ("
+"1",""
+"1","10"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 229.620455
+"
+"1","iter  20 value 226.423596
+"
+"1","iter  20 value 226.423595
+"
+"1","iter  20 value 226.423595
+"
+"1","final  value 226.423595 
+"
+"1","converged
+"
+"1","trying -"
+"1"," "
+"1","age"
+"1"," "
+"1","
+"
+"1","# weights: "
+"1"," "
+"1","18"
+"1"," ("
+"1",""
+"1","10"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 234.162421
+"
+"1","iter  20 value 223.470182
+"
+"1","final  value 223.470173 
+"
+"1","converged
+"
+"1","trying -"
+"1"," "
+"1","betadiet:bmi"
+"1"," "
+"1","
+"
+"1","# weights: "
+"1"," "
+"1","18"
+"1"," ("
+"1",""
+"1","10"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 226.162021
+"
+"1","iter  20 value 222.319412
+"
+"1","iter  20 value 222.319411
+"
+"1","iter  20 value 222.319411
+"
+"1","final  value 222.319411 
+"
+"1","converged
+"

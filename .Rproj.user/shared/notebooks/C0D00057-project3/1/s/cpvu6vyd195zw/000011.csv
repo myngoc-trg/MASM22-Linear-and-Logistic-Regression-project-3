@@ -1,0 +1,153 @@
+"0","step(p2aic_model, "
+"0","     scope = list(lower = null_model),"
+"0","     direction = ""both"")"
+"1","Start:  AIC="
+"1",""
+"1","451.97"
+"1",""
+"1","
+"
+"1",""
+"1","plasma_123 ~ bmi + age + fat + cholesterol + fiber + betadiet + "
+"1",""
+"1","
+    fat:betadiet + cholesterol:betadiet + fiber:betadiet + bmi:betadiet"
+"1",""
+"1","
+
+"
+"1","trying -"
+"1"," "
+"1","age"
+"1"," "
+"1","
+"
+"1","# weights: "
+"1"," "
+"1","33"
+"1"," ("
+"1",""
+"1","20"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 249.391410
+"
+"1","iter  20 value 216.816623
+"
+"1","iter  30 value 208.590544
+"
+"1","final  value 208.590055 
+"
+"1","converged
+"
+"1","trying -"
+"1"," "
+"1","fat:betadiet"
+"1"," "
+"1","
+"
+"1","# weights: "
+"1"," "
+"1","33"
+"1"," ("
+"1",""
+"1","20"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 250.601661
+"
+"1","iter  20 value 221.284922
+"
+"1","iter  30 value 214.450574
+"
+"1","final  value 214.445571 
+"
+"1","converged
+"
+"1","trying -"
+"1"," "
+"1","cholesterol:betadiet"
+"1"," "
+"1","
+"
+"1","# weights: "
+"1"," "
+"1","33"
+"1"," ("
+"1",""
+"1","20"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 277.070281
+"
+"1","iter  20 value 222.071399
+"
+"1","iter  30 value 208.293290
+"
+"1","final  value 208.265718 
+"
+"1","converged
+"
+"1","trying -"
+"1"," "
+"1","fiber:betadiet"
+"1"," "
+"1","
+"
+"1","# weights: "
+"1"," "
+"1","33"
+"1"," ("
+"1",""
+"1","20"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 253.297239
+"
+"1","iter  20 value 219.101299
+"
+"1","iter  30 value 210.100721
+"
+"1","final  value 210.100488 
+"
+"1","converged
+"
+"1","trying -"
+"1"," "
+"1","bmi:betadiet"
+"1"," "
+"1","
+"
+"1","# weights: "
+"1"," "
+"1","33"
+"1"," ("
+"1",""
+"1","20"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 236.381143
+"
+"1","iter  20 value 213.371998
+"
+"1","iter  30 value 208.244839
+"
+"1","final  value 208.244801 
+"
+"1","converged
+"

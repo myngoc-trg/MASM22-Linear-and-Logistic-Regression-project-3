@@ -1,0 +1,3 @@
+"0","bmi_pred <- mutate(bmi_pred, "
+"0","                    Dcook = cooks.distance(bmi_glm))"
+"0","bmi_pred"

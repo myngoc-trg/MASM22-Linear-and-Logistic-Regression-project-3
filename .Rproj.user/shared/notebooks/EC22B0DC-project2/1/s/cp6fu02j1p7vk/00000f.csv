@@ -1,0 +1,4 @@
+"0","aic <- AIC(backward_model, backward_stepwise_model, forward_model, forward_stepwise_new)"
+"0","bic <- BIC(backward_model, backward_stepwise_model, forward_model, forward_stepwise_new)"
+"0","collect.AICetc <- data.frame(aic, bic)"
+"0","collect.AICetc"

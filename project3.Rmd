@@ -1,0 +1,500 @@
+---
+title: "Project 3"
+author: "Nancy Truong"
+date: "2025-05-16"
+output: html_document
+---
+
+# Alt.2 Ordinal logistic regression
+Divide the plasma β-carotene concentrations into more than two categories with increasing concentration levels, using the function cut().
+
+Divide the plasma β-carotene concentrations into more than two categories with increasing concen-Lec.11
+tration levels, using the function cut().
+
+```{r}
+library(tidyverse); theme_set(theme_bw() + theme(text = element_text(size = 18)))
+getwd()  # Check current working directory
+list.files("Data")  # Check if 'carotene.xlsx' is inside the "Data" folder
+#install.packages("readxl")  # Only run once if not installed
+library(readxl)
+library(dplyr)  # Load dplyr for select()
+# Lecture 3 - Elasticity - multiple linear regression
+library(caret)
+library(pROC)
+library(car)
+library(rstatix)
+library(GGally)
+library(MASS)
+data <- read_excel("Data/carotene.xlsx")
+head(df)
+library(nnet)
+```
+```{r}
+#cut(df$betaplasma, breaks = c(0, 50, 200, 1600), include.lowest = TRUE)
+```
+Model the probabilities for the categories using ordinal logistic regression. Use the usual model selection tools to find a good model. You can investigate the Goodness-of-fit comparing the predictions to the true outcome
+
+You could also ignore the fact that the categories are ordered and model the probabilities using a
+multinomial logistic regression instead and compare the results with the ones from the ordinal logistic
+model
+```{r}
+data |> mutate(
+  plasma_cut = cut(betaplasma, breaks = c(0, 50, 225, 1600), include.lowest = TRUE),
+  plasma_123 = factor(
+    plasma_cut,
+    levels = c("[0,50]", "(50,225]", "(225,1.6e+03]"),
+    labels = c(1,2,3)
+  )
+) -> data
+glimpse(data)
+#view(data)
+summary(data)
+```
+
+```{r}
+mutate(data,
+       sex = factor(sex,
+                         levels = c(1, 2),
+                         labels = c("male", "female")),
+       smokstat = factor(smokstat,
+                     levels = c(1, 2, 3),
+                     labels = c("never", "former", "current")),
+       vituse = factor(vituse,
+                         levels = c(1, 2, 3),
+                         labels = c("often", "notoften", "no"))
+) -> data
+
+data <- mutate(data,
+               smokstat = relevel(smokstat, "never"), 
+               sex = relevel(sex, "female"))
+table(data$vituse)
+
+```
+
+
+```{r}
+model.null <- polr(plasma_123 ~ 1, data = data)
+sum.null <- summary(model.null)
+sum.null
+```
+
+```{r}
+model.full <- polr(plasma_123 ~ bmi + age + calories + fat + cholesterol + fiber + alcohol + betadiet + smokstat + sex + vituse, data = data)
+sum.full <- summary(model.full)
+sum.full
+```
+```{r}
+vif(model.full)
+sum.full
+```
+
+calories will be excluded
+```{r}
+model.excl <- polr(plasma_123 ~ bmi + age + fat + cholesterol + fiber + alcohol + betadiet + smokstat + sex + vituse, data = data)
+sum.excl <- summary(model.excl)
+sum.excl
+```
+Perform one Backwards elimination, starting with the full model, and one Forward selection, starting with the null model. Both versions should have the null model as lower scope and the full model as upper scope, and use BIC as selection criterion.
+
+```{r}
+cbind(beta = model.excl$coefficients, 
+      expbeta = exp(model.excl$coefficients),
+      exp(confint(model.excl)))
+```
+```{r}
+cbind(zeta = model.excl$zeta, 
+      expzeta = exp(model.excl$zeta))
+```
+```{r}
+sum.excl$coefficients
+```
+Odds and probability for deficient, all x=0
+```{r}
+odds <- exp(model.excl$zeta["1|2"])
+cbind(odds, p = odds/(1 + odds))
+```
+```{r}
+odds <- exp(model.excl$zeta["2|3"])
+cbind(odds, p = odds/(1 + odds))
+```
+
+Odds and probability for Fail, vituse = no
+
+```{r}
+odds <- exp(model.excl$zeta["1|2"])/exp(model.excl$coefficients["vituseno"])
+cbind(odds, p = odds/(1 + odds))
+```
+```{r}
+model.back <- step(model.excl, 
+     scope = list(lower = model.null, upper = model.excl),
+     direction = "backward")
+sum.back <- summary(model.back)
+```
+
+Then, use each of the resulting models as starting model in a Stepwise regression, again with null and full models as scope, and BIC as criterion
+
+```{r}
+model.backstep <- step(model.back, 
+     scope = list(lower = model.null, upper = model.excl),
+     direction = "both")
+
+```
+
+```{r}
+model.for <- step(model.null,
+     
+     scope = list(lower = model.null, upper = model.excl), 
+     direction = "forward")
+```
+```{r}
+model.forstep <- step(model.for, 
+     scope = list(lower = model.null, upper = model.excl),
+     direction = "both")
+
+```
+```{r}
+mutate(data, 
+       vituse_new = factor(vituse == "no",
+                         levels = c(FALSE, TRUE),
+                         labels = c("yes", "no"))) -> data
+glimpse(data)
+count(data, vituse_new)
+# not vituseoften = often + notoften as reference
+data <- mutate(data, vituse_new = relevel(vituse_new, "yes"))
+#model.1 <- model.back
+#sum.1 <- sum.backstep
+model.back.new <- polr(formula = plasma_123 ~ vituse_new + betadiet + bmi + cholesterol + smokstat + 
+    age, data = data)
+sum.back.new <- summary(model.back.new)
+sum.back.new
+sum.back
+```
+LR-test
+
+```{r}
+D_diff <- sum.back.new$deviance - sum.back$deviance
+df_diff <- sum.back.new$df.residual - sum.back$df.residual
+cbind(D_diff, df_diff)
+
+chi2_alpha <- qchisq(1 - 0.05, df_diff)
+Pvalue <- pchisq(D_diff, df_diff, lower.tail = FALSE)
+cbind(D_diff, df_diff, chi2_alpha, Pvalue)
+#forward_stepwise_new_sum$deviance
+
+
+```
+large p-value, delete vitusenotoften
+
+form now on, use vituse_new
+
+```{r}
+mutate(data, 
+       smokstat_new = factor(smokstat == "never",
+                         levels = c(FALSE, TRUE),
+                         labels = c("yes", "no"))) -> data
+#view(data)
+count(data, smokstat_new)
+# not vituseoften = often + notoften as reference
+data <- mutate(data, smokstat_new = relevel(smokstat_new, "yes"))
+#model.1 <- model.back
+#sum.1 <- sum.backstep
+model.back2.new <- polr(formula = plasma_123 ~ vituse_new + betadiet + bmi + cholesterol + smokstat_new + 
+    age, data = data)
+sum.back2.new <- summary(model.back2.new)
+sum.back2.new
+#sum.back
+```
+
+
+not sure what to comare AIC, BIC?
+```{r}
+anova(model.back.new, model.back2.new)
+```
+move on with 2 cat for smokstat
+model.back2.new
+
+```{r}
+data |> mutate(yhat = predict(model.for)) -> pred.for
+pred.for
+
+confusionMatrix(data = pred.for$yhat,
+                reference = pred.for$plasma_123)
+```
+
+
+```{r}
+#excl_lm <- lm(betaplasma ~ (bmi + age + fat + cholesterol + fiber + alcohol + betadiet + smokstat + sex + vituse)^2, data = df)
+#summary(excl_lm)
+model.p2aic <- polr(formula = plasma_123 ~ bmi + age + fat + cholesterol + 
+    fiber + betadiet + fat:betadiet + cholesterol:betadiet + 
+    fiber:betadiet + bmi:betadiet, data = data)
+sum.p2aic <- summary(model.p2aic)
+```
+```{r}
+model.p2aicstep <- step(model.p2aic,
+     
+     scope = list(lower = model.null), 
+     direction = "both")
+sum.p2aicstep <- summary(model.p2aicstep)
+sum.p2aicstep
+```
+
+```{r}
+model.p2bic <- polr(formula = plasma_123 ~ betadiet + bmi + vituse_new + age + 
+    betadiet:bmi, data = data)
+model.p2bicstep <- step(model.p2bic,
+     
+     scope = list(lower = model.null), 
+     direction = "both")
+```
+
+
+
+```{r}
+data |> mutate(yhat = predict(forstep_model_step)) -> pred.forstep
+#pred.forstep
+
+confusionMatrix(data = pred.forstep$yhat,
+                reference = pred.forstep$plasma_123)
+```
+
+
+```{r}
+D_0 <- model.null$deviance
+df_0 <- model.null$edf
+
+info <- cbind(
+  aic = AIC(model.null, model.excl, model.back, model.back2.new, model.p2aic, model.p2bic),
+  bic = BIC(model.null, model.excl, model.back, model.back2.new, model.p2aic, model.p2bic),
+  R2D = c(
+    1 - 1, 
+    1 - model.excl$deviance / D_0,
+    1 - model.back$deviance / D_0,
+    1 - model.back2.new$deviance / D_0,
+    1 - model.p2aic$deviance / D_0,
+    1 - model.p2bic$deviance
+  ),
+  R2D.adj = c(
+    1 - 1, 
+    1 - (model.excl$deviance + model.excl$edf - df_0) / D_0,
+    1 - (model.back$deviance + model.back$edf - df_0) / D_0,
+    1 - (model.back2.new$deviance + model.back2.new$edf - df_0) / D_0,
+    1 - (model.p2aic$deviance + model.p2aic$edf - df_0) / D_0,
+    1 - (model.p2bic$deviance + model.p2bic$edf - df_0) / D_0
+  )
+)
+
+round(info, digits = 3)
+```
+aic: model.back2.new
+bic: model.back2.new	
+```{r}
+# Predict classes
+pred.null <- predict(model.null, data)
+pred.excl <- predict(model.excl, data)
+pred.back <- predict(model.back, data)
+pred.back2.new <- predict(model.back2.new, data)
+pred.p2aic <- predict(model.p2aic, data)
+pred.p2bic <- predict(model.p2bic, data)
+
+cm.null <- confusionMatrix(pred.null, data$plasma_123)
+cm.excl <- confusionMatrix(pred.excl, data$plasma_123)
+cm.back <- confusionMatrix(pred.back, data$plasma_123)
+cm.back2.new <- confusionMatrix(pred.back2.new, data$plasma_123)
+cm.p2aic <- confusionMatrix(pred.p2bic, data$plasma_123)
+cm.p2bic <- confusionMatrix(pred.p2bic, data$plasma_123)
+```
+
+
+```{r}
+cm.null
+```
+```{r}
+cm.excl
+```
+
+
+```{r}
+cm.back
+
+```
+```{r}
+cm.back2.new
+
+```
+
+```{r}
+cm.p2aic
+
+```
+
+```{r}
+cm.p2bic
+```
+Acc: p2bic = p2aic = back =0.7238  
+No Information Rate : 0.673
+Kappa : back = 0.2655   
+
+```{r}
+null_model <- multinom(plasma_123 ~ 1, data = data)
+null_sum <- summary(null_model)
+null_sum
+```
+```{r}
+table(data$plasma_123)
+data |> mutate(plasma_123 = relevel(plasma_123, ref = 2)) ->
+ data
+```
+
+```{r}
+full_model <- multinom(plasma_123 ~ bmi + age + calories + fat + cholesterol + fiber + alcohol + betadiet + smokstat + sex + vituse, data = data)
+vif(full_model)
+```
+```{r}
+excl_model <- multinom(plasma_123 ~ bmi + age  + fat + cholesterol + fiber + alcohol + betadiet + smokstat + sex + vituse, data = data)
+```
+
+```{r}
+aic_model <- step(null_model,
+                    scope = list(upper = excl_model,
+                                 lower = null_model),
+                    direction = "both")
+aic_sum <- summary(aic_model)
+aic_sum
+```
+```{r}
+bic_model <- step(null_model,
+                     scope = list(upper = excl_model,
+                                 lower = null_model),
+                     direction = "both",
+                     k = log(nrow(data)))
+bic_sum <- summary(bic_model)
+```
+
+```{r}
+aic_sum
+```
+```{r}
+aic_new_model <- multinom(formula = plasma_123 ~ vituse_new + betadiet + bmi + age + 
+    cholesterol + smokstat, data = data)
+aic_new_sum <- summary(aic_new_model)
+
+anova(aic_new_model, aic_model)
+```
+
+```{r}
+ aic_new2_model <- multinom(formula = plasma_123 ~ vituse_new + betadiet + bmi + age + 
+    cholesterol + smokstat_new, data = data)
+aic_new2_sum <- summary(aic_new2_model)
+
+anova(aic_new2_model, aic_new_model)
+```
+```{r}
+bic_sum
+```
+```{r}
+bic_new_model <- multinom(formula = plasma_123 ~ vituse_new + betadiet + bmi + age + 
+    cholesterol, data = data)
+bic_new_sum <- summary(bic_new_model)
+
+anova(bic_new_model, bic_model)
+```
+
+
+```{r}
+p2aic_model <- multinom(plasma_123 ~ bmi + age + fat + cholesterol + 
+    fiber + betadiet + fat:betadiet + cholesterol:betadiet + 
+    fiber:betadiet + bmi:betadiet, data = data)
+
+
+```
+```{r}
+step(p2aic_model, 
+     scope = list(lower = null_model),
+     direction = "both")
+```
+
+
+```{r}
+p2bic_model <- multinom(plasma_123 ~ betadiet + bmi + vituse_new + age + 
+    betadiet:bmi, data = data)
+
+step(p2bic_model, 
+     scope = list(lower = null_model),
+     direction = "both")
+```
+
+```{r}
+D_0 <- model.null$deviance
+df_0 <- model.null$edf
+info2 <- cbind(aic = AIC(excl_model, aic_new2_model,bic_new_model , p2aic_model, p2bic_model),
+              bic = BIC(excl_model, aic_new2_model,bic_new_model , p2aic_model, p2bic_model))
+info2$r2 <- round(c(
+  1 - excl_model$deviance/D_0,
+  1 - aic_new2_model$deviance/D_0,
+  1 - bic_new_model$deviance/D_0,
+  1 - p2aic_model$deviance/D_0,
+  1 - p2bic_model$deviance/D_0), digits = 3)
+
+info2$r2.adj <- round(c(
+  1 - (excl_model$deviance + (excl_model$edf - df_0))/D_0,
+  1 - (aic_new2_model$deviance + (aic_new2_model$edf - df_0))/D_0,
+  1 - (bic_new_model$deviance + (bic_new_model$edf - df_0))/D_0,
+  1 - (p2aic_model$deviance + (p2aic_model$edf - df_0))/D_0,
+  1 - (p2bic_model$deviance + (p2bic_model$edf - df_0))/D_0),
+  digits = 3)
+
+info2
+```
+```{r}
+data |>
+  mutate(
+    p = predict(excl_model, type = "probs"),
+    yhat = predict(excl_model)) -> excl_pred
+
+glimpse(excl_pred)
+confusionMatrix(data = excl_pred$yhat, 
+                reference = excl_pred$plasma_123)
+```
+```{r}
+data |>
+  mutate(
+    p = predict(aic_new2_model, type = "probs"),
+    yhat = predict(aic_new2_model)) -> aic_new2_pred
+
+glimpse(aic_new2_pred)
+confusionMatrix(data = aic_new2_pred$yhat, 
+                reference = aic_new2_pred$plasma_123)
+```
+```{r}
+data |>
+  mutate(
+    p = predict(bic_new_model, type = "probs"),
+    yhat = predict(bic_new_model)) -> bic_new_pred
+
+glimpse(bic_new_pred)
+confusionMatrix(data = bic_new_pred$yhat, 
+                reference = bic_new_pred$plasma_123)
+```
+
+```{r}
+data |>
+  mutate(
+    p = predict(p2aic_model, type = "probs"),
+    yhat = predict(p2aic_model)) -> p2aic_pred
+
+glimpse(p2aic_pred)
+confusionMatrix(data = p2aic_pred$yhat, 
+                reference = p2aic_pred$plasma_123)
+```
+```{r}
+data |>
+  mutate(
+    p = predict(p2bic_model, type = "probs"),
+    yhat = predict(p2bic_model)) -> p2bic_pred
+
+glimpse(p2bic_pred)
+confusionMatrix(data = p2bic_pred$yhat, 
+                reference = p2bic_pred$plasma_123)
+```
+

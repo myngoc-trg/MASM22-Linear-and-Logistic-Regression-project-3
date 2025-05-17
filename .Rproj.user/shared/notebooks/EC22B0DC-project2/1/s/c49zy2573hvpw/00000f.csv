@@ -1,0 +1,1 @@
+"0","arrange(filter(bmi_pred, abs(stddevresid)>2), Dcook)"

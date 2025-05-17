@@ -1,0 +1,10 @@
+"0","#excl_lm <- lm(betaplasma ~ (bmi + age + fat + cholesterol + fiber + alcohol + betadiet + smokstat + sex + vituse)^2, data = df)"
+"0","#summary(excl_lm)"
+"0","model.p2aic <- polr(formula = plasma_123 ~ bmi + age + fat + cholesterol + "
+"0","    fiber + betadiet + fat:betadiet + cholesterol:betadiet + "
+"0","    fiber:betadiet + bmi:betadiet, data = data)"
+"0","sum.p2aic <- summary(model.p2aic)"
+"2","
+Re-fitting to get Hessian
+
+"

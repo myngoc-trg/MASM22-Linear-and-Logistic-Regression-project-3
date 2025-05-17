@@ -1,0 +1,5 @@
+"0",""
+"0","collect.AICetc |> mutate("
+"0","  #R2McF = 1 - loglik/lnL0,"
+"0","  R2McF.adj = 1 - (loglik - (df - 1)/2)/lnL0) -> collect.AICetc"
+"0","collect.AICetc"

@@ -1,0 +1,22 @@
+"0","excl_model <- multinom(plasma_123 ~ bmi + age  + fat + cholesterol + fiber + alcohol + betadiet + smokstat + sex + vituse, data = data)"
+"1","# weights: "
+"1"," "
+"1","42"
+"1"," ("
+"1",""
+"1","26"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 240.006977
+"
+"1","iter  20 value 211.455341
+"
+"1","iter  30 value 209.853965
+"
+"1","final  value 209.852666 
+"
+"1","converged
+"

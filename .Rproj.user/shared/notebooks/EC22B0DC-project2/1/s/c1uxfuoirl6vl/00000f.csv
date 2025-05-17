@@ -1,0 +1,3 @@
+"0",""
+"0","collect.AICetc |> mutate(df.1 = NULL) -> collect.AICetc"
+"0","collect.AICetc"

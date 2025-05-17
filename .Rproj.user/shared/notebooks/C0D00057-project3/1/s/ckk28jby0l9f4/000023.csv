@@ -1,0 +1,33 @@
+"1","# weights: "
+"1"," "
+"1","24"
+"1"," ("
+"1",""
+"1","14"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 229.888895
+"
+"1","iter  20 value 217.693714
+"
+"1","final  value 217.693616 
+"
+"1","converged
+"
+"1","
+Step:  AIC="
+"1",""
+"1","515.92"
+"1",""
+"1","
+"
+"1",""
+"1","plasma_123 ~ vituse + betadiet + bmi + age + cholesterol"
+"1",""
+"1","
+
+"
+"0","bic_sum <- summary(bic_model)"

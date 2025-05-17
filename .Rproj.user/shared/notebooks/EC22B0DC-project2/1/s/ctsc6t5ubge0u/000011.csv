@@ -1,0 +1,7 @@
+"0","topleft_AIC$threshold"
+"1","[1]"
+"1"," 0.779499"
+"1","
+"
+"0","topleft_BIC <- coords(roc_BIC, ""best"", best.method = ""closest.topleft"")"
+"0","topleft_BIC"

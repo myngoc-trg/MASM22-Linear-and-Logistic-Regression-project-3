@@ -1,0 +1,2 @@
+"0",""
+"0","filter(bmi_pred, abs(stddevresid)>2)"

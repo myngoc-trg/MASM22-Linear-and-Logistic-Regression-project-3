@@ -1,0 +1,24 @@
+"0","p2aic_model <- multinom(plasma_123 ~ bmi + age + fat + cholesterol + "
+"0","    fiber + betadiet + fat:betadiet + cholesterol:betadiet + "
+"0","    fiber:betadiet + bmi:betadiet, data = data)"
+"1","# weights: "
+"1"," "
+"1","36"
+"1"," ("
+"1",""
+"1","22"
+"1",""
+"1"," variable)
+"
+"1","initial  value 346.062871 
+"
+"1","iter  10 value 246.401624
+"
+"1","iter  20 value 221.693705
+"
+"1","iter  30 value 204.024495
+"
+"1","final  value 203.986366 
+"
+"1","converged
+"

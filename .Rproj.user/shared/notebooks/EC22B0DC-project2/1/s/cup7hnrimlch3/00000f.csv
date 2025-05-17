@@ -1,0 +1,7 @@
+"0","aucs <- "
+"0","  data.frame("
+"0","    model = c(""AIC"", ""BIC""),"
+"0","    auc = c(auc(roc_AIC), auc(roc_BIC)),"
+"0","    lwr = c(ci(roc_AIC)[1], ci(roc_BIC)[1]),"
+"0","    upr = c(ci(auc(roc_AIC))[3], ci(auc(roc_BIC))[3]))"
+"0","aucs"

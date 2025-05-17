@@ -1,0 +1,6 @@
+"0","mutate(data, "
+"0","       smokstat_new = factor(smokstat == ""never"","
+"0","                         levels = c(FALSE, TRUE),"
+"0","                         labels = c(""yes"", ""no""))) -> data"
+"0","#view(data)"
+"0","count(data, smokstat_new)"
